@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .invoice {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .actions button.edit {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .actions button.edit:hover {
+            background-color: #e0a800;
+        }
+
+        .actions button.delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .actions button.delete:hover {
+            background-color: #c82333;
+        }
+
+        .sort-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sort-buttons button {
+            background-color: #007bff;
+        }
+
+        .sort-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .clear-all {
+            background-color: #dc3545;
+        }
+
+        .clear-all:hover {
+            background-color: #c82333;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .form-group input {
+                font-size: 12px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .actions button {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+
+            .total {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .form-group input {
+                font-size: 10px;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            table {
+                font-size: 10px;
+            }
+
+            th, td {
+                padding: 6px;
+            }
+
+            .actions button {
+                padding: 3px 6px;
+                font-size: 10px;
+            }
+
+            .total {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Invoice Generator</h1>
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productId">Product ID:</label>
+                <input type="text" id="productId" required>
+            </div>
+            <div class="form-group">
+                <label for="productName">Product Name:</label>
+                <input type="text" id="productName" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price per Unit:</label>
+                <input type="number" id="price" step="0.01" required>
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+
+        <div class="invoice">
+            <h2>Invoice</h2>
+            <div class="sort-buttons">
+                <button onclick="sortById()">Sort by ID</button>
+                <button onclick="sortByName()">Sort by Name</button>
+                <button class="clear-all" onclick="clearAll()">Clear All</button>
+            </div>
+            <table id="invoiceTable">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price per Unit</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be added here dynamically -->
+                </tbody>
+            </table>
+            <div class="total">
+                <strong>Total Amount: $<span id="totalAmount">0.00</span></strong>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved invoice data from local storage when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            loadInvoiceFromStorage();
+        });
+
+        // Function to load invoice data from local storage
+        function loadInvoiceFromStorage() {
+            const savedInvoice = JSON.parse(localStorage.getItem('invoice')) || [];
+            savedInvoice.forEach(product => {
+                addProductToInvoice(product.id, product.name, product.quantity, product.price);
+            });
+            updateTotalAmount();
+        }
+
+        // Handle form submission
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const productId = document.getElementById('productId').value;
+            const productName = document.getElementById('productName').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const price = parseFloat(document.getElementById('price').value);
+
+            if (productId && productName && quantity && price) {
+                addProductToInvoice(productId, productName, quantity, price);
+                saveProductToStorage(productId, productName, quantity, price);
+                updateTotalAmount();
+                document.getElementById('productForm').reset();
+            }
+        });
+
+        // Function to add a product to the invoice table
+        function addProductToInvoice(productId, productName, quantity, price) {
+            const tableBody = document.querySelector('#invoiceTable tbody');
+            const total = quantity * price;
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${productId}</td>
+                <td>${productName}</td>
+                <td>${quantity}</td>
+                <td>$${price.toFixed(2)}</td>
+                <td>$${total.toFixed(2)}</td>
+                <td class="actions">
+                    <button class="edit" onclick="editProduct('${productId}')">Edit</button>
+                    <button class="delete" onclick="deleteProduct('${productId}')">Delete</button>
+                </td>
+            `;
+
+            tableBody.appendChild(newRow);
+        }
+
+        // Function to save a product to local storage
+        function saveProductToStorage(productId, productName, quantity, price) {
+            const savedInvoice = JSON.parse(localStorage.getItem('invoice')) || [];
+            savedInvoice.push({ id: productId, name: productName, quantity: quantity, price: price });
+            localStorage.setItem('invoice', JSON.stringify(savedInvoice));
+        }
+
+        // Function to update the total amount
+        function updateTotalAmount() {
+            const rows = document.querySelectorAll('#invoiceTable tbody tr');
+            let totalAmount = 0;
+
+            rows.forEach(row => {
+                const total = parseFloat(row.querySelector('td:nth-child(5)').textContent.replace('$', ''));
+                totalAmount += total;
+            });
+
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+        }
+
+        // Function to edit a product
+        function editProduct(productId) {
+            const savedInvoice = JSON.parse(localStorage.getItem('invoice')) || [];
+            const productIndex = savedInvoice.findIndex(product => product.id === productId);
+
+            if (productIndex !== -1) {
+                const product = savedInvoice[productIndex];
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('quantity').value = product.quantity;
+                document.getElementById('price').value = product.price;
+
+                savedInvoice.splice(productIndex, 1);
+                localStorage.setItem('invoice', JSON.stringify(savedInvoice));
+                updateInvoiceTable();
+            }
+        }
+
+        // Function to delete a product
+        function deleteProduct(productId) {
+            const savedInvoice = JSON.parse(localStorage.getItem('invoice')) || [];
+            const updatedInvoice = savedInvoice.filter(product => product.id !== productId);
+            localStorage.setItem('invoice', JSON.stringify(updatedInvoice));
+            updateInvoiceTable();
+        }
+
+        // Function to update the invoice table
+        function updateInvoiceTable() {
+            const tableBody = document.querySelector('#invoiceTable tbody');
+            tableBody.innerHTML = '';
+            loadInvoiceFromStorage();
+        }
+
+        // Function to clear all products
+        function clearAll() {
+            localStorage.removeItem('invoice');
+            updateInvoiceTable();
+        }
+
+        // Function to sort by ID
+        function sortById() {
+            const savedInvoice = JSON.parse(localStorage.getItem('invoice')) || [];
+            savedInvoice.sort((a, b) => a.id.localeCompare(b.id));
+            localStorage.setItem('invoice', JSON.stringify(savedInvoice));
+            updateInvoiceTable();
+        }
+
+        // Function to sort by Name
+        function sortByName() {
+            const savedInvoice = JSON.parse(localStorage.getItem('invoice')) || [];
+            savedInvoice.sort((a, b) => a.name.localeCompare(b.name));
+            localStorage.setItem('invoice', JSON.stringify(savedInvoice));
+            updateInvoiceTable();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <link rel="icon" type="image/png" href="../image/database.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container">
+        <h2>Student Storage</h2>
+        <div class="input-under">
+            <input type="text" id="studentId" placeholder="ID">
+            <input type="text" id="studentName" placeholder="Name">
+            <input type="date" id="dob">
+            <input type="text" id="address" placeholder="Address">
+            <button class="frutiger-button" onclick="addStudent()">
+            <div class="inner">
+              <div class="top-white"></div>
+              <span class="text">Add Student</span>
+            </div>
+        </button>    
+        </div>
+        
+        <div data-aos="fade-up" data-aos-duration="1200" data-aos-delay="210">
+            <button onclick="sortByName('asc')" class="btnSort">
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <span class="front text">Sort Name A-Z
+                </span>
+            </button>
+            <button onclick="sortByName('desc')" class="btnSort">
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <span class="front text">Sort Name Z-A
+                </span>
+            </button>
+            <button onclick="sortById('asc')" class="btnSort">
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <span class="front text">Sort ID 0-9
+                </span>
+            </button>
+            <button onclick="sortById('desc')" class="btnSort">
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <span class="front text">Sort ID 9-0
+                </span>
+            </button>
+        </div>
+        <!-- <button onclick="sortByName('desc')">Sort Name Z-A</button>
+        <button onclick="sortById('asc')">Sort ID 0-9</button>
+        <button onclick="sortById('desc')">Sort ID 9-0</button> -->
+        <!-- <input type="text" id="search" placeholder="Search by ID or Name" onkeyup="searchStudent()"> -->
+        <div class="input-container">
+            <input type="text" name="text" class="input" id="search" placeholder="Search by ID or Name" onkeyup="searchStudent()">
+            <label class="label">ID  & NAME</label>
+            <div class="top-line"></div>
+            <div class="under-line"></div>
+          </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>
